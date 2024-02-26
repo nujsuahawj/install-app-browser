@@ -150,12 +150,16 @@
           // Running in standalone mode
           //console.log('Running in standalone mode');
           alert("Running in standalone mode");
+          document.getElementById("iOSInstructions").style.display = "none";
+        document.getElementById("iOSInstallButton").style.display = "none";
       } else {
           // Running in browser mode
           //console.log('Running in browser mode');
           alert("Running in browser mode");
           document.getElementById("iOSInstructions").style.display = "block";
         document.getElementById("iOSInstallButton").style.display = "inline-block";
+        // Hide the Open App button
+        document.getElementById("openAppButton").style.display = "none";
       }      
     }
 
