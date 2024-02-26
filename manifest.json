@@ -1,0 +1,17 @@
+{
+    "name": "Test",
+    "short_name": "Test",
+    "start_url": "http://127.0.0.1:5500/index.html",
+    "background_color": "#FFFFFF",
+    "description": "Test",
+    "display": "standalone",
+    "theme_color": "#198754",
+    "icons": [
+        {
+            "src": "logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Install PWA</title>
+    <!-- PWA  -->
+    <meta name="theme-color" content="#198754" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .installButton {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: none;
+        margin-bottom: 10px;
+      }
+
+      .installButton:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Install PWA Example</h1>
+
+    <!-- Android Install Button -->
+    <button
+      id="androidInstallButton"
+      class="installButton"
+      style="display: none"
+    >
+      Install PWA (Android)
+    </button>
+
+    <!-- iOS Install Instructions -->
+    <p id="iOSInstructions" style="display: none">
+      To install the app on your iOS device, tap the
+      <strong>Share</strong>
+      button and then select
+      <strong>Add to Home Screen</strong>
+      .
+    </p>
+
+    <!-- iOS Install Button -->
+    <button id="iOSInstallButton" class="installButton" style="display: none">
+      Install PWA (iOS)
+    </button>
+
+    <!-- Open App Button -->
+    <button id="openAppButton" class="installButton" style="display: none">
+      Open App
+    </button>
+
+    <script>
+      if (!navigator.serviceWorker.controller) {
+        navigator.serviceWorker
+          .register("http://127.0.0.1:5500/sw.js")
+          .then(function (reg) {
+            //console.log("Service worker has been registered for scope: " + reg.scope);
+            console.log("success");
+          });
+      }
+      let deferredPrompt;
+
+      window.addEventListener("beforeinstallprompt", (event) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        event.preventDefault();
+        // Stash the event so it can be triggered later
+        deferredPrompt = event;
+        // Update UI to notify the user they can add to home screen
+        document.getElementById("androidInstallButton").style.display =
+          "inline-block";
+          // Hide the Open App button
+          document.getElementById("openAppButton").style.display = "none";
+      });
+
+      // Button click event to show the install prompt (Android)
+      document
+        .getElementById("androidInstallButton")
+        .addEventListener("click", () => {
+          // Show the install prompt
+          deferredPrompt.prompt();
+          // Wait for the user to respond to the prompt
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === "accepted") {
+              console.log("User accepted the Android install prompt");
+              // Hide the install button
+              document.getElementById("androidInstallButton").style.display =
+                "none";
+            } else {
+              console.log("User dismissed the Android install prompt");
+            }
+            // Reset the deferredPrompt variable
+            deferredPrompt = null;
+          });
+        });
+
+      // Detect if the app is being used as a PWA
+      if (!window.matchMedia("(display-mode: standalone)").matches) {
+        // Show the open app button if the app is being used in the browser
+        document.getElementById("openAppButton").style.display = "inline-block";
+      }
+
+      // Listen for changes in display mode
+      window
+        .matchMedia("(display-mode: standalone)")
+        .addEventListener("change", (event) => {
+          if (event.matches) {
+            // Hide the open app button if the app is being used as a standalone app
+            document.getElementById("openAppButton").style.display = "none";
+          } else {
+            // Show the open app button if the app is being used in the browser
+            document.getElementById("openAppButton").style.display =
+              "inline-block";
+          }
+        });
+
+      // Open the app when the "Open App" button is clicked
+      document.getElementById("openAppButton").addEventListener("click", () => {
+        // Detect if the app is opened in the browser
+        if (!window.matchMedia("(display-mode: standalone)").matches) {
+          // Open PWA in standalone mode
+          try {
+            //window.open('http://127.0.0.1:5500/index.html');
+            alert("Go to the home screen and open the app from there.");
+          } catch (error) {
+            alert("Error opening app", error);
+          }
+        }
+      });
+
+      // Detect if the device is iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isIOS) {
+      // check status in IOS device
+        if (window.navigator.standalone) {
+          // Running in standalone mode
+          //console.log('Running in standalone mode');
+          alert("Running in standalone mode");
+      } else {
+          // Running in browser mode
+          //console.log('Running in browser mode');
+          alert("Running in browser mode");
+          document.getElementById("iOSInstructions").style.display = "block";
+        document.getElementById("iOSInstallButton").style.display = "inline-block";
+      }      
+    }
+
+    // Button click event to show the install instructions (iOS)
+    document.getElementById("iOSInstallButton").addEventListener("click", () => {
+      // Show instructions for iOS
+      document.getElementById("iOSInstructions").style.display = "block";
+    });
+  
+  
+    </script>
+  </body>
+</html>
